@@ -7,7 +7,7 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-router.post('/create', function(req,res,next){
+router.post('/', function(req,res,next){
   console.log(req.body.extension);
 
   var name = req.body.name;
@@ -32,7 +32,7 @@ router.post('/create', function(req,res,next){
   res.sendStatus(200);
 });
 
-router.get('/delete', function(req,res,next){
+router.get('/', function(req,res,next){
   // Aquí debe implementarse el borrado del fichero de audio indetificado por trackId en tracks.cdpsfy.es
   var track_url = "TODO";
 	var deletion_path =  path.resolve(path.relative("/controllers","/CDPSfy/public/")) + track_url;
