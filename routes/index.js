@@ -1,8 +1,11 @@
 var express = require('express');
 var fs = require('fs');
+var path = require('path');
+var querystring = require('querystring')
 var router = express.Router();
 
 /* GET home page. */
+
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
@@ -15,29 +18,38 @@ router.post('/', function(req,res,next){
   var id = req.body.id;
   var track_buffer = req.body.track;
 
-  console.log(name);
-  console.log(id);
-  console.log(extension);
+  var server_url = "http://localhost:3000/";
 
-  var url = name;
-  var write_path =  "/mnt/nas";
+  var url = server_url + id + "." + extension;
+  var write_path =  "/mnt/nas/" + id + "." + extension;
+
     console.log(write_path);
     fs.writeFile( write_path, track_buffer, function(err){
     if(err){
       return console.log(err);
+      res.sendStatus(500);
     }
     console.log("The file was saved!");
-    res.sendStatus(200);
+    res.status(200).json({url: id});
   });
-  res.sendStatus(200);
+
 });
 
-router.get('/', function(req,res,next){
+router.delete('/:id', function(req,res,next){
   // Aquí debe implementarse el borrado del fichero de audio indetificado por trackId en tracks.cdpsfy.es
-  var track_url = "TODO";
-	var deletion_path =  path.resolve(path.relative("/controllers","/CDPSfy/public/")) + track_url;
-	console.log(deletion_path);
-	fs.unlink(deletion_path);
+  var track_url = req.params.id;
+
+  //TODO: Check extension
+  var deletion_path = "/mnt/nas/" + track_url + ".mp3";
+  if (fs.existsSync(deletion_path)){
+      console.log("llego el limpiador");
+      fs.unlink(deletion_path);
+      res.status(202);
+  }else {
+    res.status(500);
+  }
+
+
 
 
 });
