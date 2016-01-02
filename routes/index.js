@@ -10,6 +10,18 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+router.get('/:id', function(req,res,next){
+  res.sendFile("/mnt/nas/" + req.params.id + ".mp3", function (err) {
+    if (err) {
+      console.log(err);
+      res.status(err.status).end();
+    }
+    else {
+      console.log('Sent:', req.params.id);
+    }
+  });
+});
+
 router.post('/', function(req,res,next){
   console.log(req.body.extension);
 
@@ -38,20 +50,17 @@ router.post('/', function(req,res,next){
 router.delete('/:id', function(req,res,next){
   // Aquí debe implementarse el borrado del fichero de audio indetificado por trackId en tracks.cdpsfy.es
   var track_url = req.params.id;
-
   //TODO: Check extension
   var deletion_path = "/mnt/nas/" + track_url + ".mp3";
   if (fs.existsSync(deletion_path)){
-      console.log("llego el limpiador");
       fs.unlink(deletion_path);
-      res.status(202);
+      console.log(req);
+      res.send(202);
+      return;
   }else {
     res.status(500);
   }
-
-
-
-
+  next();
 });
 
 module.exports = router;
