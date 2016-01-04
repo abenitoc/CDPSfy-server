@@ -3,7 +3,7 @@ var fs = require('fs');
 var path = require('path');
 var querystring = require('querystring')
 var router = express.Router();
-
+var multer  = require('multer');
 /* GET home page. */
 
 router.get('/', function(req, res, next) {
@@ -22,13 +22,14 @@ router.get('/:id', function(req,res,next){
   });
 });
 
-router.post('/', function(req,res,next){
-  console.log(req.body.extension);
+router.post('/', multer({inMemory: true}),function(req,res,next){
+  console.log(req.files.track);
+  var track = req.files.track;
+  var name = track.name;
+  var extension = track.extension;
+  var id = track.name.split('.')[0];
 
-  var name = req.body.name;
-  var extension = req.body.extension;
-  var id = req.body.id;
-  var track_buffer = req.body.track;
+  var track_buffer = track.buffer;
 
   var server_url = "http://localhost:3000/";
 
@@ -52,15 +53,18 @@ router.delete('/:id', function(req,res,next){
   var track_url = req.params.id;
   //TODO: Check extension
   var deletion_path = "/mnt/nas/" + track_url + ".mp3";
-  if (fs.existsSync(deletion_path)){
+
+  fs.exists(deletion_path, function(exists) {
+    if (exists){
+      console.log("Deleted: " + deletion_path);
       fs.unlink(deletion_path);
-      console.log(req);
-      res.send(202);
-      return;
-  }else {
-    res.status(500);
-  }
-  next();
+      res.sendStatus(202);
+    } else {
+      console.log("Error deleting: " + deletion_path);
+      return res.sendStatus(500);
+    }
+  });
+
 });
 
 module.exports = router;
