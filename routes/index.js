@@ -31,7 +31,7 @@ router.post('/', multer({inMemory: true}),function(req,res,next){
 
   var track_buffer = track.buffer;
 
-  var server_url = "http://localhost:3000/";
+  var server_url = "http://tracks.cdpsfy.com/";
 
   var url = server_url + id + "." + extension;
   var write_path =  "/mnt/nas/" + id + "." + extension;
